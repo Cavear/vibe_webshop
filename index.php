@@ -1,29 +1,19 @@
 <?php
-// Voorbeeldproducten (komen later uit de database)
-$producten = [
-    [
-        'naam'         => 'Geurkaars',
-        'prijs'        => 7.95,
-        'beschrijving' => 'Een zachte vanillegeur voor gezellige avonden.',
-        'icoon'        => '🕯️',
-    ],
-    [
-        'naam'         => 'Notitieboek',
-        'prijs'        => 4.50,
-        'beschrijving' => 'Handzaam boekje voor ideeën, lijstjes en krabbels.',
-        'icoon'        => '📓',
-    ],
-    [
-        'naam'         => 'Mok',
-        'prijs'        => 9.95,
-        'beschrijving' => 'Stevige keramische mok voor koffie of thee.',
-        'icoon'        => '☕',
-    ],
-];
+require __DIR__ . '/db.php';
 
-function formatPrijs(float $prijs): string
+// Producten uit de database (prijzen in centen).
+// Bij een databasefout krijgt de bezoeker een nette melding; details gaan naar het foutlog.
+$producten = null;
+try {
+    $producten = haalProducten();
+} catch (Throwable $e) {
+    error_log('Producten laden mislukt: ' . $e->getMessage());
+    http_response_code(503);
+}
+
+function formatPrijs(int $cent): string
 {
-    return '€ ' . number_format($prijs, 2, ',', '.');
+    return '€ ' . number_format($cent / 100, 2, ',', '.');
 }
 ?>
 <!DOCTYPE html>
@@ -36,8 +26,9 @@ function formatPrijs(float $prijs): string
 </head>
 <body>
     <header class="kop">
-        <div class="container">
+        <div class="container kop-inhoud">
             <a href="index.php" class="logo">Cadeauwinkel</a>
+            <a href="#mandje" class="mandje-link">Mandje (<span id="mandje-aantal">0</span>)</a>
         </div>
     </header>
 
@@ -51,15 +42,53 @@ function formatPrijs(float $prijs): string
 
         <section class="container">
             <h2>Onze producten</h2>
+            <?php if ($producten === null): ?>
+                <p class="melding">De producten kunnen op dit moment niet worden geladen. Probeer het later opnieuw.</p>
+            <?php elseif (count($producten) === 0): ?>
+                <p class="melding">Er zijn nog geen producten.</p>
+            <?php else: ?>
             <div class="producten">
                 <?php foreach ($producten as $product): ?>
                     <article class="product-kaart">
                         <div class="product-afbeelding" aria-hidden="true"><?= $product['icoon'] ?></div>
                         <h3><?= htmlspecialchars($product['naam']) ?></h3>
                         <p class="beschrijving"><?= htmlspecialchars($product['beschrijving']) ?></p>
-                        <p class="prijs"><?= formatPrijs($product['prijs']) ?></p>
+                        <p class="prijs"><?= formatPrijs($product['prijs_cent']) ?></p>
+                        <button type="button" class="knop"
+                                data-product-id="<?= htmlspecialchars($product['id']) ?>"
+                                data-naam="<?= htmlspecialchars($product['naam']) ?>"
+                                data-prijs-cent="<?= (int) $product['prijs_cent'] ?>">In mandje</button>
                     </article>
                 <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
+        </section>
+
+        <section id="mandje" class="container mandje">
+            <h2>Winkelmandje</h2>
+            <p id="mandje-leeg" class="mandje-leeg">Je mandje is nog leeg.</p>
+            <div class="mandje-scroll">
+            <table id="mandje-tabel" class="mandje-tabel" hidden>
+                <thead>
+                    <tr>
+                        <th scope="col">Product</th>
+                        <th scope="col" class="kolom-prijs">Prijs</th>
+                        <th scope="col">Aantal</th>
+                        <th scope="col">Totaal</th>
+                        <th scope="col"><span class="visueel-verborgen">Verwijderen</span></th>
+                    </tr>
+                </thead>
+                <tbody id="mandje-regels"></tbody>
+                <tfoot>
+                    <tr>
+                        <th scope="row">Totaalbedrag</th>
+                        <td class="kolom-prijs"></td>
+                        <td></td>
+                        <td id="mandje-totaal"></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
             </div>
         </section>
     </main>
@@ -69,5 +98,7 @@ function formatPrijs(float $prijs): string
             <p>&copy; <?= date('Y') ?> Cadeauwinkel</p>
         </div>
     </footer>
+
+    <script src="mandje.js"></script>
 </body>
 </html>

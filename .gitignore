@@ -1,0 +1,9 @@
+# Node / Playwright
+node_modules/
+test-results/
+playwright-report/
+
+# Lokale verbindingsgegevens en geheimen
+config.php
+.env
+.env.*

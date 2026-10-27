@@ -1,6 +1,7 @@
 /* ===== Variabelen ===== */
 :root {
     --kleur-primair: #c0563b;
+    --kleur-primair-donker: #9e432c;
     --kleur-primair-licht: #f6e3dc;
     --kleur-achtergrond: #fdf9f5;
     --kleur-kaart: #ffffff;
@@ -50,11 +51,32 @@ h1, h2, h3 {
     padding: var(--ruimte-m) 0;
 }
 
+.kop-inhoud {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--ruimte-m);
+}
+
 .logo {
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--kleur-primair);
     text-decoration: none;
+}
+
+.mandje-link {
+    color: var(--kleur-tekst);
+    font-weight: 600;
+    text-decoration: none;
+    padding: var(--ruimte-s) var(--ruimte-m);
+    border: 1px solid var(--kleur-rand);
+    border-radius: var(--afronding);
+}
+
+.mandje-link:hover {
+    border-color: var(--kleur-primair);
+    color: var(--kleur-primair);
 }
 
 /* ===== Introductie ===== */
@@ -113,10 +135,130 @@ h1, h2, h3 {
 }
 
 .prijs {
-    margin: 0;
+    margin: 0 0 var(--ruimte-m);
     font-size: 1.25rem;
     font-weight: 700;
     color: var(--kleur-primair);
+}
+
+/* ===== Knoppen ===== */
+.knop {
+    font: inherit;
+    font-weight: 600;
+    color: #fff;
+    background: var(--kleur-primair);
+    border: none;
+    border-radius: var(--afronding);
+    padding: var(--ruimte-s) var(--ruimte-l);
+    cursor: pointer;
+}
+
+.knop:hover {
+    background: var(--kleur-primair-donker);
+}
+
+.knop-klein {
+    font: inherit;
+    color: var(--kleur-tekst);
+    background: var(--kleur-kaart);
+    border: 1px solid var(--kleur-rand);
+    border-radius: var(--afronding);
+    padding: 0.25rem var(--ruimte-s);
+    cursor: pointer;
+}
+
+.knop-klein:hover:not(:disabled) {
+    border-color: var(--kleur-primair);
+    color: var(--kleur-primair);
+}
+
+.knop-klein:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.knop:focus-visible,
+.knop-klein:focus-visible,
+.mandje-link:focus-visible {
+    outline: 3px solid var(--kleur-primair);
+    outline-offset: 2px;
+}
+
+/* ===== Winkelmandje ===== */
+.mandje {
+    margin-bottom: var(--ruimte-xl);
+}
+
+.melding,
+.mandje-leeg {
+    background: var(--kleur-kaart);
+    border: 1px dashed var(--kleur-rand);
+    border-radius: var(--afronding);
+    padding: var(--ruimte-l);
+    text-align: center;
+    color: var(--kleur-tekst-zacht);
+}
+
+/* Op heel smalle schermen scrolt alleen de tabel, niet de hele pagina */
+.mandje-scroll {
+    position: relative;
+    overflow-x: auto;
+}
+
+.mandje-tabel {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--kleur-kaart);
+    border: 1px solid var(--kleur-rand);
+    border-radius: var(--afronding);
+    box-shadow: var(--schaduw);
+    overflow: hidden;
+}
+
+.mandje-tabel th,
+.mandje-tabel td {
+    padding: var(--ruimte-m);
+    text-align: left;
+    border-bottom: 1px solid var(--kleur-rand);
+}
+
+.mandje-tabel thead th {
+    background: var(--kleur-primair-licht);
+}
+
+.mandje-tabel tfoot th,
+.mandje-tabel tfoot td {
+    font-weight: 700;
+    font-size: 1.125rem;
+    border-bottom: none;
+}
+
+.mandje-tabel tfoot td {
+    color: var(--kleur-primair);
+}
+
+.aantal {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ruimte-s);
+}
+
+.aantal-getal {
+    min-width: 2ch;
+    text-align: center;
+}
+
+.verwijder-icoon {
+    display: none;
+}
+
+.visueel-verborgen {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
 }
 
 /* ===== Voet ===== */
@@ -136,5 +278,27 @@ h1, h2, h3 {
 
     .intro h1 {
         font-size: 1.75rem;
+    }
+
+    .mandje-tabel th,
+    .mandje-tabel td {
+        padding: var(--ruimte-s);
+    }
+
+    /* Kolom "Prijs" (per stuk) verbergen op smalle schermen */
+    .kolom-prijs {
+        display: none;
+    }
+
+    .aantal {
+        gap: 0.25rem;
+    }
+
+    .verwijder-tekst {
+        display: none;
+    }
+
+    .verwijder-icoon {
+        display: inline;
     }
 }
