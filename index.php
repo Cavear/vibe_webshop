@@ -91,6 +91,36 @@ function formatPrijs(int $cent): string
             </table>
             </div>
         </section>
+
+        <section id="bevestiging" class="container" tabindex="-1" hidden>
+            <div class="bevestiging">
+                <h2>Bedankt voor je testbestelling!</h2>
+                <p>Je bestelnummer is <strong id="bevestiging-nummer"></strong>.</p>
+                <p>Totaalbedrag: <strong id="bevestiging-totaal"></strong></p>
+                <p class="test-uitleg">Dit was een testbestelling: er is niets betaald en er wordt niets verzonden.</p>
+            </div>
+        </section>
+
+        <section id="afrekenen" class="container afrekenen" hidden>
+            <h2>Afrekenen</h2>
+            <p class="test-uitleg">Dit is een testbestelling: er wordt niet betaald.</p>
+            <form id="bestel-formulier" class="formulier" novalidate>
+                <div class="veld">
+                    <label for="naam">Naam</label>
+                    <input type="text" id="naam" name="naam" autocomplete="name" maxlength="100" required
+                           aria-describedby="naam-fout">
+                    <p id="naam-fout" class="veld-fout" hidden></p>
+                </div>
+                <div class="veld">
+                    <label for="email">E-mailadres</label>
+                    <input type="email" id="email" name="email" autocomplete="email" maxlength="255" required
+                           aria-describedby="email-fout">
+                    <p id="email-fout" class="veld-fout" hidden></p>
+                </div>
+                <p id="formulier-fout" class="formulier-fout" role="alert" hidden></p>
+                <button type="submit" id="bestel-knop" class="knop">Plaats testbestelling</button>
+            </form>
+        </section>
     </main>
 
     <footer class="voet">

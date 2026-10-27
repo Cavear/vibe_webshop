@@ -32,3 +32,31 @@ ON DUPLICATE KEY UPDATE
     prijs_cent   = VALUES(prijs_cent),
     icoon        = VALUES(icoon),
     sortering    = VALUES(sortering);
+
+-- Bestellingen. Er is nog geen betaalprovider: elke bestelling is een testbestelling.
+CREATE TABLE IF NOT EXISTS bestellingen (
+    id            INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    bestelnummer  VARCHAR(20)  NULL,                 -- wordt direct na het invoegen gezet (o.b.v. id)
+    naam          VARCHAR(100) NOT NULL,
+    email         VARCHAR(255) NOT NULL,
+    totaal_cent   INT UNSIGNED NOT NULL,             -- door de server berekend
+    status        VARCHAR(20)  NOT NULL DEFAULT 'test',
+    aangemaakt_op DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_bestellingen_bestelnummer (bestelnummer)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Bestelregels. Naam en prijs worden vastgelegd zoals ze op het moment van bestellen waren.
+CREATE TABLE IF NOT EXISTS bestelregels (
+    id                INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    bestelling_id     INT UNSIGNED NOT NULL,
+    product_id        INT UNSIGNED NOT NULL,
+    product_naam      VARCHAR(100) NOT NULL,
+    prijs_cent        INT UNSIGNED NOT NULL,
+    aantal            INT UNSIGNED NOT NULL,
+    regel_totaal_cent INT UNSIGNED NOT NULL,
+    PRIMARY KEY (id),
+    KEY idx_bestelregels_bestelling (bestelling_id),
+    CONSTRAINT fk_bestelregels_bestelling FOREIGN KEY (bestelling_id) REFERENCES bestellingen (id),
+    CONSTRAINT fk_bestelregels_product    FOREIGN KEY (product_id)    REFERENCES producten (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -8,6 +8,9 @@
     --kleur-tekst: #2f2a26;
     --kleur-tekst-zacht: #6b625b;
     --kleur-rand: #ece3da;
+    --kleur-fout: #b3261e;
+    --kleur-succes: #2e6b3a;
+    --kleur-succes-licht: #e8f3ea;
 
     --lettertype: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
@@ -250,6 +253,87 @@ h1, h2, h3 {
 
 .verwijder-icoon {
     display: none;
+}
+
+/* ===== Afrekenen ===== */
+.afrekenen,
+.bevestiging {
+    margin-bottom: var(--ruimte-xl);
+}
+
+.test-uitleg {
+    color: var(--kleur-tekst-zacht);
+    font-size: 0.875rem;
+}
+
+.formulier {
+    max-width: 28rem;
+    background: var(--kleur-kaart);
+    border: 1px solid var(--kleur-rand);
+    border-radius: var(--afronding);
+    box-shadow: var(--schaduw);
+    padding: var(--ruimte-l);
+}
+
+.veld {
+    margin-bottom: var(--ruimte-m);
+}
+
+.veld label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.veld input {
+    width: 100%;
+    font: inherit;
+    color: var(--kleur-tekst);
+    background: var(--kleur-kaart);
+    border: 1px solid var(--kleur-rand);
+    border-radius: var(--afronding);
+    padding: var(--ruimte-s) var(--ruimte-m);
+}
+
+.veld input:focus-visible {
+    outline: 3px solid var(--kleur-primair);
+    outline-offset: 1px;
+}
+
+.veld input[aria-invalid="true"] {
+    border-color: var(--kleur-fout);
+}
+
+.veld-fout,
+.formulier-fout {
+    color: var(--kleur-fout);
+    font-size: 0.875rem;
+    margin: 0.25rem 0 0;
+}
+
+.formulier-fout {
+    margin-bottom: var(--ruimte-m);
+}
+
+.knop:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.bevestiging {
+    background: var(--kleur-succes-licht);
+    border: 1px solid var(--kleur-succes);
+    border-radius: var(--afronding);
+    padding: var(--ruimte-l);
+}
+
+#bevestiging-nummer {
+    white-space: nowrap;
+}
+
+.bevestiging h2 {
+    margin-top: 0;
+    color: var(--kleur-succes);
 }
 
 .visueel-verborgen {

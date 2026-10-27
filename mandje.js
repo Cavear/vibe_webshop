@@ -57,6 +57,7 @@
     // ===== Acties =====
     function voegToe(id) {
         mandje[id] = Math.min((mandje[id] || 0) + 1, MAX_AANTAL);
+        elBevestiging.hidden = true;
         wijzig();
     }
 
@@ -85,6 +86,11 @@
     var elTabel = document.getElementById('mandje-tabel');
     var elRegels = document.getElementById('mandje-regels');
     var elTotaal = document.getElementById('mandje-totaal');
+    var elAfrekenen = document.getElementById('afrekenen');
+    var elFormulier = document.getElementById('bestel-formulier');
+    var elBestelKnop = document.getElementById('bestel-knop');
+    var elFormulierFout = document.getElementById('formulier-fout');
+    var elBevestiging = document.getElementById('bevestiging');
 
     function maakKnop(tekst, actie, id, label) {
         var knop = document.createElement('button');
@@ -157,6 +163,104 @@
         var leeg = ids.length === 0;
         elLeeg.hidden = !leeg;
         elTabel.hidden = leeg;
+        elAfrekenen.hidden = leeg;
+    }
+
+    // ===== Afrekenen (testbestelling) =====
+    var veldNamen = ['naam', 'email'];
+
+    function wisFouten() {
+        veldNamen.forEach(function (naam) {
+            var fout = document.getElementById(naam + '-fout');
+            fout.hidden = true;
+            fout.textContent = '';
+            elFormulier.elements[naam].removeAttribute('aria-invalid');
+        });
+        elFormulierFout.hidden = true;
+        elFormulierFout.textContent = '';
+    }
+
+    function toonFormulierFout(tekst) {
+        elFormulierFout.textContent = tekst;
+        elFormulierFout.hidden = false;
+    }
+
+    function toonFouten(fouten) {
+        var eersteVeld = null;
+        veldNamen.forEach(function (naam) {
+            if (fouten[naam]) {
+                var fout = document.getElementById(naam + '-fout');
+                fout.textContent = fouten[naam];
+                fout.hidden = false;
+                elFormulier.elements[naam].setAttribute('aria-invalid', 'true');
+                eersteVeld = eersteVeld || elFormulier.elements[naam];
+            }
+        });
+        if (fouten.mandje) {
+            toonFormulierFout(fouten.mandje);
+        }
+        if (eersteVeld) {
+            eersteVeld.focus();
+        }
+    }
+
+    function toonBevestiging(bestelnummer, totaalCent) {
+        document.getElementById('bevestiging-nummer').textContent = bestelnummer;
+        document.getElementById('bevestiging-totaal').textContent = formatEuro(totaalCent);
+        elBevestiging.hidden = false;
+        elBevestiging.focus();
+    }
+
+    function plaatsBestelling(e) {
+        e.preventDefault();
+        wisFouten();
+
+        // Alleen identifiers en aantallen; de server bepaalt de prijzen
+        var regels = Object.keys(mandje).map(function (id) {
+            return { id: id, aantal: mandje[id] };
+        });
+        if (regels.length === 0) {
+            toonFormulierFout('Je mandje is leeg.');
+            return;
+        }
+
+        elBestelKnop.disabled = true;
+        elBestelKnop.textContent = 'Bezig met bestellen…';
+
+        fetch('bestellen.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({
+                naam: elFormulier.elements.naam.value,
+                email: elFormulier.elements.email.value,
+                regels: regels
+            })
+        })
+            .then(function (res) {
+                return res.json()
+                    .catch(function () { return {}; })
+                    .then(function (data) { return { status: res.status, data: data }; });
+            })
+            .then(function (r) {
+                if (r.status === 201 && r.data.ok) {
+                    // Pas na geslaagde opslag het mandje legen
+                    mandje = {};
+                    wijzig();
+                    elFormulier.reset();
+                    toonBevestiging(r.data.bestelnummer, r.data.totaal_cent);
+                } else if (r.data.fouten) {
+                    toonFouten(r.data.fouten);
+                } else {
+                    toonFormulierFout(r.data.melding || 'Er ging iets mis. Probeer het later opnieuw.');
+                }
+            })
+            .catch(function () {
+                toonFormulierFout('Geen verbinding met de server. Probeer het opnieuw.');
+            })
+            .then(function () {
+                elBestelKnop.disabled = false;
+                elBestelKnop.textContent = 'Plaats testbestelling';
+            });
     }
 
     // ===== Gebeurtenissen =====
@@ -184,6 +288,8 @@
             verwijder(id);
         }
     });
+
+    elFormulier.addEventListener('submit', plaatsBestelling);
 
     // Mandje gelijk houden als het in een ander tabblad verandert
     window.addEventListener('storage', function (e) {
