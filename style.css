@@ -1,0 +1,140 @@
+/* ===== Variabelen ===== */
+:root {
+    --kleur-primair: #c0563b;
+    --kleur-primair-licht: #f6e3dc;
+    --kleur-achtergrond: #fdf9f5;
+    --kleur-kaart: #ffffff;
+    --kleur-tekst: #2f2a26;
+    --kleur-tekst-zacht: #6b625b;
+    --kleur-rand: #ece3da;
+
+    --lettertype: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+    --ruimte-s: 0.5rem;
+    --ruimte-m: 1rem;
+    --ruimte-l: 2rem;
+    --ruimte-xl: 4rem;
+
+    --afronding: 12px;
+    --schaduw: 0 2px 8px rgba(47, 42, 38, 0.08);
+    --max-breedte: 1000px;
+}
+
+/* ===== Basis ===== */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: var(--lettertype);
+    line-height: 1.6;
+    color: var(--kleur-tekst);
+    background: var(--kleur-achtergrond);
+}
+
+h1, h2, h3 {
+    line-height: 1.2;
+}
+
+.container {
+    max-width: var(--max-breedte);
+    margin: 0 auto;
+    padding: 0 var(--ruimte-m);
+}
+
+/* ===== Kop ===== */
+.kop {
+    background: var(--kleur-kaart);
+    border-bottom: 1px solid var(--kleur-rand);
+    padding: var(--ruimte-m) 0;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--kleur-primair);
+    text-decoration: none;
+}
+
+/* ===== Introductie ===== */
+.intro {
+    background: var(--kleur-primair-licht);
+    padding: var(--ruimte-xl) 0;
+    text-align: center;
+    margin-bottom: var(--ruimte-l);
+}
+
+.intro h1 {
+    margin: 0 0 var(--ruimte-m);
+    font-size: 2.25rem;
+}
+
+.intro p {
+    max-width: 36rem;
+    margin: 0 auto;
+    color: var(--kleur-tekst-zacht);
+    font-size: 1.125rem;
+}
+
+/* ===== Producten ===== */
+.producten {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--ruimte-l);
+    margin-bottom: var(--ruimte-xl);
+}
+
+.product-kaart {
+    background: var(--kleur-kaart);
+    border: 1px solid var(--kleur-rand);
+    border-radius: var(--afronding);
+    box-shadow: var(--schaduw);
+    padding: var(--ruimte-l);
+    text-align: center;
+}
+
+.product-afbeelding {
+    font-size: 4rem;
+    background: var(--kleur-primair-licht);
+    border-radius: var(--afronding);
+    padding: var(--ruimte-l) 0;
+    margin-bottom: var(--ruimte-m);
+}
+
+.product-kaart h3 {
+    margin: 0 0 var(--ruimte-s);
+    font-size: 1.25rem;
+}
+
+.beschrijving {
+    margin: 0 0 var(--ruimte-m);
+    color: var(--kleur-tekst-zacht);
+}
+
+.prijs {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--kleur-primair);
+}
+
+/* ===== Voet ===== */
+.voet {
+    border-top: 1px solid var(--kleur-rand);
+    padding: var(--ruimte-l) 0;
+    text-align: center;
+    color: var(--kleur-tekst-zacht);
+    font-size: 0.875rem;
+}
+
+/* ===== Mobiel ===== */
+@media (max-width: 600px) {
+    .intro {
+        padding: var(--ruimte-l) 0;
+    }
+
+    .intro h1 {
+        font-size: 1.75rem;
+    }
+}
