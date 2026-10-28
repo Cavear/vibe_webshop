@@ -126,6 +126,15 @@ omgevingsvariabele `PHP_BIN`.
 > De tests plaatsen echte testbestellingen in je lokale database
 > (herkenbaar aan `status = 'test'`).
 
+### Tests op GitHub (Actions)
+
+Bij elke pull request en elke push naar `main` draaien de tests ook
+automatisch op GitHub (`.github/workflows/tests.yml`). Daar is geen XAMPP:
+de workflow gebruikt een tijdelijke MariaDB-database en de ingebouwde
+PHP-server. De test voor `.htaccess` wordt daar overgeslagen, omdat alleen
+Apache dat bestand gebruikt. Het resultaat zie je bij de pull request of
+op het tabblad **Actions**.
+
 ## Projectstructuur
 
 ```
