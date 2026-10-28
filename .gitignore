@@ -7,3 +7,5 @@ playwright-report/
 config.php
 .env
 .env.*
+# Playwright CLI output (may contain credentials)
+.playwright-cli/
