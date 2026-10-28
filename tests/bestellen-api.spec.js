@@ -117,12 +117,18 @@ test('dubbele regels voor hetzelfde product worden samengevoegd', async ({ reque
     ]);
 });
 
-test('afgeschermde bestanden zijn niet via de webserver op te vragen', async ({ request }) => {
+test('afgeschermde mappen zijn niet via de webserver op te vragen', async ({ request }) => {
+    // De afscherming zit in .htaccess en werkt dus alleen onder Apache (niet met de PHP-server in CI)
+    const server = (await request.get('./')).headers()['server'] ?? '';
+    test.skip(!/apache/i.test(server), '.htaccess wordt alleen door Apache gebruikt');
+
     for (const pad of ['tests/db-helper.php', 'tests/bestellen.spec.js', 'database/schema.sql']) {
         const antwoord = await request.get(pad);
         expect(antwoord.status(), pad).toBe(403);
     }
+});
 
+test('config.php toont geen verbindingsgegevens', async ({ request }) => {
     // config.php geeft alleen een array terug en toont dus niets
     const config = await request.get('config.php');
     expect(await config.text()).toBe('');
