@@ -112,3 +112,65 @@ test('server negeert een meegestuurde (gemanipuleerde) prijs', async ({ request 
         { slug: 'mok', product_naam: 'Mok', prijs_cent: 995, aantal: 1, regel_totaal_cent: 995 },
     ]);
 });
+
+test('lege naam: foutmelding bij het veld en geen bestelling', async ({ page }) => {
+    const email = uniekEmail('geen-naam');
+    await page.goto('./');
+    await inMandje(page, 'Mok').click();
+
+    await page.getByLabel('E-mailadres').fill(email);
+    await page.getByRole('button', { name: 'Plaats testbestelling' }).click();
+
+    await expect(page.locator('#naam-fout')).toHaveText('Vul je naam in.');
+    await expect(page.getByLabel('Naam')).toHaveAttribute('aria-invalid', 'true');
+    await expect(page.getByLabel('Naam')).toBeFocused();
+    await expect(page.locator('#bevestiging')).toBeHidden();
+    expect(aantalBestellingenVoor(email)).toBe(0);
+});
+
+test('serverfout: melding getoond, mandje blijft staan en knop werkt weer', async ({ page }) => {
+    await page.route('**/bestellen.php', (route) => route.fulfill({
+        status: 503,
+        json: { ok: false, melding: 'Je bestelling kon niet worden opgeslagen. Probeer het later opnieuw.' },
+    }));
+    await page.goto('./');
+    await inMandje(page, 'Mok').click();
+
+    await page.getByLabel('Naam').fill('Test Klant');
+    await page.getByLabel('E-mailadres').fill('serverfout@example.com');
+    const knop = page.getByRole('button', { name: 'Plaats testbestelling' });
+    await knop.click();
+
+    await expect(page.locator('#formulier-fout'))
+        .toHaveText('Je bestelling kon niet worden opgeslagen. Probeer het later opnieuw.');
+    await expect(page.locator('#bevestiging')).toBeHidden();
+    await expect(page.locator('#mandje-aantal')).toHaveText('1');
+    await expect(knop).toBeEnabled();
+});
+
+test('geen verbinding: melding getoond en mandje blijft staan', async ({ page }) => {
+    await page.route('**/bestellen.php', (route) => route.abort('internetdisconnected'));
+    await page.goto('./');
+    await inMandje(page, 'Mok').click();
+
+    await page.getByLabel('Naam').fill('Test Klant');
+    await page.getByLabel('E-mailadres').fill('offline@example.com');
+    await page.getByRole('button', { name: 'Plaats testbestelling' }).click();
+
+    await expect(page.locator('#formulier-fout'))
+        .toHaveText('Geen verbinding met de server. Probeer het opnieuw.');
+    await expect(page.locator('#mandje-aantal')).toHaveText('1');
+});
+
+test('na een bestelling verdwijnt de bevestiging bij een nieuw product', async ({ page }) => {
+    await page.goto('./');
+    await inMandje(page, 'Mok').click();
+    await page.getByLabel('Naam').fill('Test Klant');
+    await page.getByLabel('E-mailadres').fill(uniekEmail('opnieuw'));
+    await page.getByRole('button', { name: 'Plaats testbestelling' }).click();
+    await expect(page.locator('#bevestiging')).toBeVisible();
+
+    await inMandje(page, 'Notitieboek').click();
+    await expect(page.locator('#bevestiging')).toBeHidden();
+    await expect(page.locator('#afrekenen')).toBeVisible();
+});
