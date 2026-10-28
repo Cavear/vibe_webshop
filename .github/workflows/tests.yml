@@ -1,11 +1,11 @@
-# Draait de Playwright-tests bij elke push naar main en bij elke pull request.
+# Draait de Playwright-tests bij elke pull request (CI).
+# Na een merge naar main roept deploy-test.yml deze workflow aan vóór de deploy naar TEST.
 # In plaats van XAMPP: een MariaDB-container en de ingebouwde PHP-server.
 name: Tests
 
 on:
-  push:
-    branches: [main]
   pull_request:
+  workflow_call:
 
 jobs:
   playwright:

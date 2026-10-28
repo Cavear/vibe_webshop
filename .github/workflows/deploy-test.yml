@@ -1,0 +1,50 @@
+# Na elke merge naar main: tests draaien en daarna automatisch naar de TEST-omgeving.
+# De deploy draait op de self-hosted runner op de XAMPP-laptop (label "xampp").
+name: Deploy TEST
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Nooit twee deploys naar TEST tegelijk; een nieuwere wacht op de lopende
+concurrency:
+  group: deploy-test
+  cancel-in-progress: false
+
+jobs:
+  tests:
+    uses: ./.github/workflows/tests.yml
+
+  deploy:
+    needs: tests
+    runs-on: [self-hosted, xampp]
+    timeout-minutes: 15
+    env:
+      BASE_URL: http://localhost/vibe_webshop_test/
+      WEBSHOP_CONFIG: C:\xampp\htdocs\vibe_webshop_test\config.php
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Deploy naar TEST
+        shell: powershell
+        run: .\deploy\deploy.ps1 -Omgeving test
+
+      - name: Tests installeren
+        shell: powershell
+        run: |
+          npm ci
+          npx playwright install chromium
+
+      - name: Alle tests op TEST
+        shell: powershell
+        run: npx playwright test
+
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report-test
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

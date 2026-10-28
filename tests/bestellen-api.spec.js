@@ -122,14 +122,17 @@ test('afgeschermde mappen zijn niet via de webserver op te vragen', async ({ req
     const server = (await request.get('./')).headers()['server'] ?? '';
     test.skip(!/apache/i.test(server), '.htaccess wordt alleen door Apache gebruikt');
 
+    // 403: afgeschermd (DEV). 404: niet eens neergezet (TEST/PROD).
     for (const pad of ['tests/db-helper.php', 'tests/bestellen.spec.js', 'database/schema.sql']) {
         const antwoord = await request.get(pad);
-        expect(antwoord.status(), pad).toBe(403);
+        expect([403, 404], pad).toContain(antwoord.status());
     }
 });
 
 test('config.php toont geen verbindingsgegevens', async ({ request }) => {
-    // config.php geeft alleen een array terug en toont dus niets
+    // Op DEV toont config.php niets (alleen een array); op TEST/PROD geeft .htaccess een 403
     const config = await request.get('config.php');
-    expect(await config.text()).toBe('');
+    const tekst = await config.text();
+    expect(tekst).not.toContain('wachtwoord');
+    expect(tekst).not.toContain('gebruiker');
 });

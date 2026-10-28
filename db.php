@@ -1,16 +1,38 @@
 <?php
-// Databaseverbinding (PDO) en het ophalen van producten.
+// Configuratie, databaseverbinding (PDO) en het ophalen van producten.
+
+function config(): array
+{
+    static $config = null;
+
+    if ($config === null) {
+        // tests/db-helper.php kan een andere config.php opgeven (bijv. die van TEST)
+        $configBestand = defined('CONFIG_BESTAND') ? CONFIG_BESTAND : __DIR__ . '/config.php';
+        if (!is_file($configBestand)) {
+            throw new RuntimeException('config.php ontbreekt; kopieer config.example.php naar config.php.');
+        }
+        $config = require $configBestand;
+    }
+
+    return $config;
+}
+
+// 'dev', 'test' of 'prod'. Zonder (geldige) config.php gaan we uit van 'dev'.
+function omgeving(): string
+{
+    try {
+        return config()['omgeving'] ?? 'dev';
+    } catch (Throwable $e) {
+        return 'dev';
+    }
+}
 
 function db(): PDO
 {
     static $pdo = null;
 
     if ($pdo === null) {
-        $configBestand = __DIR__ . '/config.php';
-        if (!is_file($configBestand)) {
-            throw new RuntimeException('config.php ontbreekt; kopieer config.example.php naar config.php.');
-        }
-        $db = (require $configBestand)['db'];
+        $db = config()['db'];
 
         $dsn = sprintf(
             'mysql:host=%s;port=%d;dbname=%s;charset=%s',
