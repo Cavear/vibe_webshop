@@ -25,6 +25,11 @@ function formatPrijs(int $cent): string
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <?php if (omgeving() !== 'prod'): ?>
+        <div class="omgeving-balk omgeving-<?= htmlspecialchars(omgeving()) ?>">
+            Omgeving: <?= htmlspecialchars(strtoupper(omgeving())) ?>
+        </div>
+    <?php endif; ?>
     <header class="kop">
         <div class="container kop-inhoud">
             <a href="index.php" class="logo">Cadeauwinkel</a>

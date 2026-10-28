@@ -4,10 +4,17 @@
 //
 //   php tests/db-helper.php bestelling TB-20261027-0001
 //   php tests/db-helper.php aantal-voor-email iemand@example.com
+//
+// Zet WEBSHOP_CONFIG op het pad van een andere config.php om een andere omgeving te lezen.
 
 if (PHP_SAPI !== 'cli') {
     http_response_code(404);
     exit;
+}
+
+// Met WEBSHOP_CONFIG lees je de database van een andere omgeving, bijvoorbeeld TEST
+if (getenv('WEBSHOP_CONFIG')) {
+    define('CONFIG_BESTAND', getenv('WEBSHOP_CONFIG'));
 }
 
 require __DIR__ . '/../db.php';

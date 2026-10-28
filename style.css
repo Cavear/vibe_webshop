@@ -47,6 +47,20 @@ h1, h2, h3 {
     padding: 0 var(--ruimte-m);
 }
 
+/* ===== Omgevingsbalk (niet op prod) ===== */
+.omgeving-balk {
+    padding: 0.25rem var(--ruimte-m);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-align: center;
+    color: #fff;
+    background: #4a5560;
+}
+
+.omgeving-test {
+    background: #8a5a00;
+}
+
 /* ===== Kop ===== */
 .kop {
     background: var(--kleur-kaart);

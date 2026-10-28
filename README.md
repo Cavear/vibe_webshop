@@ -128,22 +128,79 @@ omgevingsvariabele `PHP_BIN`.
 
 ### Tests op GitHub (Actions)
 
-Bij elke pull request en elke push naar `main` draaien de tests ook
-automatisch op GitHub (`.github/workflows/tests.yml`). Daar is geen XAMPP:
-de workflow gebruikt een tijdelijke MariaDB-database en de ingebouwde
-PHP-server. De test voor `.htaccess` wordt daar overgeslagen, omdat alleen
-Apache dat bestand gebruikt. Het resultaat zie je bij de pull request of
-op het tabblad **Actions**.
+Bij elke pull request draaien de tests ook automatisch op GitHub
+(`.github/workflows/tests.yml`). Daar is geen XAMPP: de workflow gebruikt
+een tijdelijke MariaDB-database en de ingebouwde PHP-server. De test voor
+`.htaccess` wordt daar overgeslagen, omdat alleen Apache dat bestand
+gebruikt. Het resultaat zie je bij de pull request of op het tabblad
+**Actions**.
+
+## Omgevingen: DEV, TEST en PROD
+
+Alle drie draaien in XAMPP op dezelfde computer, elk met een eigen map en
+een eigen database:
+
+| Omgeving | Adres | Database | Bijgewerkt |
+| --- | --- | --- | --- |
+| DEV | <http://localhost/vibe_webshop/> | `vibe_webshop` | Terwijl je werkt (je Git-map) |
+| TEST | <http://localhost/vibe_webshop_test/> | `vibe_webshop_test` | Automatisch na een merge naar `main` |
+| PROD | <http://localhost/vibe_webshop_prod/> | `vibe_webshop_prod` | Als jij een release maakt |
+
+Op DEV en TEST staat bovenaan een gekleurde balk met de naam van de
+omgeving; op PROD niet.
+
+### De werkwijze
+
+1. Werk op een eigen branch en test op **DEV**.
+2. Open een pull request. De tests draaien op GitHub.
+3. Groen? Merge naar `main`. De workflow **Deploy TEST** draait de tests
+   opnieuw, zet de code op **TEST** en draait daar alle tests.
+4. Klopt alles op TEST? Maak op GitHub een **release** (bijv. `v1.0.0`)
+   vanaf `main`. De workflow **Deploy PROD** zet die versie op **PROD** en
+   doet een korte rooktest. Op PROD worden geen testbestellingen geplaatst.
+   Je kunt ook op het tabblad **Actions** bij **Deploy PROD** op
+   **Run workflow** klikken (alleen code die op `main` staat mag naar PROD).
+
+### Wat er bij een deploy gebeurt
+
+Het script `deploy/deploy.ps1` kopieert alleen de bestanden die de site
+nodig heeft (geen tests, documentatie of `node_modules`), schrijft een
+`.htaccess` met instellingen per omgeving (geen foutmeldingen tonen,
+`config.php` afschermen), voert `database/schema.sql` uit en controleert
+of de homepage met producten laadt. `config.php` in de doelmap blijft
+altijd staan.
+
+### Eenmalig inrichten
+
+TEST en PROD maak je één keer aan (map, database, eigen databasegebruiker
+en `config.php`):
+
+```
+powershell -ExecutionPolicy Bypass -File deploy\inrichten.ps1 -Omgeving test
+powershell -ExecutionPolicy Bypass -File deploy\inrichten.ps1 -Omgeving prod
+```
+
+De deploys worden uitgevoerd door een **self-hosted GitHub Actions-runner**
+op deze computer, met het label `xampp`. Die moet draaien (en XAMPP ook),
+anders blijven de deploys op GitHub wachten.
+
+Met de hand deployen kan ook:
+
+```
+powershell -ExecutionPolicy Bypass -File deploy\deploy.ps1 -Omgeving test
+```
 
 ## Projectstructuur
 
 ```
 index.php            Homepage met producten, mandje en afrekenen
 bestellen.php        Slaat een testbestelling op (server rekent de prijzen)
-db.php               Databaseverbinding (PDO)
+db.php               Configuratie en databaseverbinding (PDO)
 mandje.js            Winkelmandje (localStorage) en afrekenformulier
 style.css            Opmaak met CSS-variabelen
 config.example.php   Voorbeeld voor config.php (config.php staat niet in Git)
 database/schema.sql  Tabellen en startproducten
 tests/               Playwright-tests
+deploy/              Scripts om TEST en PROD in te richten en bij te werken
+.github/workflows/   Tests (CI), Deploy TEST en Deploy PROD
 ```

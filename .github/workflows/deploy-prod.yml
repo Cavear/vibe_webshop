@@ -1,0 +1,37 @@
+# Naar PROD gaat alleen code die al op main staat (en dus al op TEST heeft gedraaid).
+# Starten: maak op GitHub een release (bijv. v1.0.0), of gebruik "Run workflow" op main.
+# Op PROD draait alleen een rooktest: de Playwright-tests plaatsen bestellingen en horen daar niet.
+name: Deploy PROD
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, xampp]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Controleren dat deze code op main staat
+        shell: powershell
+        run: |
+          git fetch origin main --quiet
+          git merge-base --is-ancestor HEAD origin/main
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "::error::Deze versie ($env:GITHUB_REF_NAME) staat niet op main. Alleen code van main mag naar PROD."
+            exit 1
+          }
+          Write-Host "Versie $env:GITHUB_REF_NAME ($(git rev-parse --short HEAD)) staat op main."
+
+      - name: Deploy naar PROD
+        shell: powershell
+        run: .\deploy\deploy.ps1 -Omgeving prod
