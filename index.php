@@ -28,6 +28,7 @@ function formatPrijs(int $cent): string
     <header class="kop">
         <div class="container kop-inhoud">
             <a href="index.php" class="logo">Cadeauwinkel</a>
+            <a href="#verlanglijstje" class="mandje-link">Verlanglijstje</a>
             <a href="#mandje" class="mandje-link">Mandje (<span id="mandje-aantal">0</span>)</a>
         </div>
     </header>
