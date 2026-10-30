@@ -152,6 +152,7 @@ h1, h2, h3 {
     background: var(--kleur-primair);
     border: none;
     border-radius: var(--afronding);
+    min-height: 44px;
     padding: var(--ruimte-s) var(--ruimte-l);
     cursor: pointer;
 }
@@ -166,6 +167,8 @@ h1, h2, h3 {
     background: var(--kleur-kaart);
     border: 1px solid var(--kleur-rand);
     border-radius: var(--afronding);
+    min-width: 44px;
+    min-height: 44px;
     padding: 0.25rem var(--ruimte-s);
     cursor: pointer;
 }
