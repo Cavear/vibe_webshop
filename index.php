@@ -47,6 +47,11 @@ function formatPrijs(int $cent): string
             <?php elseif (count($producten) === 0): ?>
                 <p class="melding">Er zijn nog geen producten.</p>
             <?php else: ?>
+            <div class="veld">
+                <label for="zoek-product">Zoek een product</label>
+                <input type="search" id="zoek-product" autocomplete="off">
+            </div>
+            <p id="zoek-geen-resultaat" class="melding" role="status" hidden>Geen producten gevonden.</p>
             <div class="producten">
                 <?php foreach ($producten as $product): ?>
                     <article class="product-kaart">
@@ -130,5 +135,6 @@ function formatPrijs(int $cent): string
     </footer>
 
     <script src="mandje.js"></script>
+    <script src="zoeken.js"></script>
 </body>
 </html>
