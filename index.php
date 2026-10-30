@@ -125,7 +125,7 @@ function formatPrijs(int $cent): string
 
     <footer class="voet">
         <div class="container">
-            <p>&copy; <?= date('Y') ?> Cadeauwinkel</p>
+            <p>&copy; <?= date('Y') ?> Cadeauwinkel · Met zorg ingepakt en verstuurd</p>
         </div>
     </footer>
 
