@@ -66,7 +66,7 @@ function formatPrijs(int $cent): string
 
         <section id="mandje" class="container mandje">
             <h2>Winkelmandje</h2>
-            <p id="mandje-leeg" class="mandje-leeg">Je mandje is nog leeg.</p>
+            <p id="mandje-leeg" class="mandje-leeg" role="status">Je mandje is nog leeg.</p>
             <div class="mandje-scroll">
             <table id="mandje-tabel" class="mandje-tabel" hidden>
                 <thead>
