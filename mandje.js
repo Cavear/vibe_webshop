@@ -299,5 +299,14 @@
         }
     });
 
+    // Na terugkeren via de terugknop toont de browser de pagina uit zijn geheugen (back-forward cache).
+    // Lees het mandje dan opnieuw uit de opslag, anders staat er een oude inhoud.
+    window.addEventListener('pageshow', function (e) {
+        if (e.persisted) {
+            mandje = laadMandje();
+            toonMandje();
+        }
+    });
+
     toonMandje();
 })();
